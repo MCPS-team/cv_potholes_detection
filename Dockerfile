@@ -1,8 +1,8 @@
-FROM python:3.7
+FROM python:3.7-slim-buster
 # MAINTAINER Josip Janzic <josip@jjanzic.com>
 
 RUN apt-get update \
-    && apt-get install -y \
+    && apt-get install -y --no-install-recommends \
         build-essential \
         cmake \
         git \
@@ -52,9 +52,15 @@ RUN wget https://github.com/opencv/opencv/archive/${OPENCV_VERSION}.zip \
 RUN ln -s \
   /usr/local/python/cv2/python-3.7/cv2.cpython-37m-x86_64-linux-gnu.so \
   /usr/local/lib/python3.7/site-packages/cv2.so
-
 RUN pip install scikit-image
+
+RUN apt-get update
 RUN mkdir cv_potholes_detection
+# RUN apt-get install linux-headers-`uname -r` && \
+#     cd /usr/src/linux-headers-`uname -r` && \
+#     make include/generated/uapi/linux/version.h && \
+#     ln -s $PWD/include/generated/uapi/linux/version.h include/version.h
+
 COPY ./ cv_potholes_detection
 RUN cd 'cv_potholes_detection/Pothole_Detection/Pothole_Detection_YOLO/darknet' && \
     sh ./Makefile_to_CPU.sh && \
@@ -64,9 +70,6 @@ RUN cd 'cv_potholes_detection/Pothole_Detection/Pothole_Detection_YOLO/darknet' 
     ldconfig && \
     ln -s '/cv_potholes_detection/Pothole_Detection/Pothole_Detection_YOLO/darknet/libdarknet.so' '/cv_potholes_detection/'
 RUN pip install -r /cv_potholes_detection/requirements.txt
-
-RUN apt update && \
-    apt install nano
 
 CMD cd cv_potholes_detection &&  \
     python main.py
