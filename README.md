@@ -1,5 +1,5 @@
 # cv_potholes_detection
-Detect potholes in images using Deep Learning technique (YoloV4)
+Detect potholes in images using Deep Learning technique (YoloV4 [AlexeyAB/darknet](https://github.com/AlexeyAB/darknet))
 
 # Getting started
 Download and move `yolov4-spp-pothole-train_4000.weights` https://drive.google.com/open?id=1ozpPrFcjbn0uikeHQdXCowSXCAik4NHV into `models/` folder.
