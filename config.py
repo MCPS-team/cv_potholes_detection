@@ -13,7 +13,10 @@ try:
         for key in args:
             print(key.upper(), key.upper() in os.environ)
             if key.upper() in os.environ:
-                args[key] = os.environ[key.upper()]
+                if key == 'threshold':
+                    args[key] = float(os.environ[key.upper()])
+                else:
+                    args[key] = os.environ[key.upper()]
         print(args)
         config = Struct(**args)
 except:
@@ -21,7 +24,9 @@ except:
     with open(config_path) as json_file:
         args = json.load(json_file)
         for key in args:
-            if key.upper() in os.environ:
+            if key == 'threshold':
+                args[key] = float(os.environ[key.upper()])
+            else:
                 args[key] = os.environ[key.upper()]
         config = Struct(**args)
 
