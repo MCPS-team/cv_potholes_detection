@@ -1,5 +1,4 @@
-FROM python:3.7-slim-buster
-# MAINTAINER Josip Janzic <josip@jjanzic.com>
+FROM python:3.7
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
@@ -56,10 +55,6 @@ RUN pip install scikit-image
 
 RUN apt-get update
 RUN mkdir cv_potholes_detection
-# RUN apt-get install linux-headers-`uname -r` && \
-#     cd /usr/src/linux-headers-`uname -r` && \
-#     make include/generated/uapi/linux/version.h && \
-#     ln -s $PWD/include/generated/uapi/linux/version.h include/version.h
 
 COPY ./ cv_potholes_detection
 RUN cd 'cv_potholes_detection/Pothole_Detection/Pothole_Detection_YOLO/darknet' && \
