@@ -1,3 +1,9 @@
+*.weights
+*.h5
+frames_in/*
+frames_out/*
+test
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

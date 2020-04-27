@@ -1,0 +1,10 @@
+wheel
+Flask
+tqdm
+matplotlib
+numpy
+pandas
+scikit-image
+python-resize-image
+opencv-contrib-python
+opencv-python-nonfree
