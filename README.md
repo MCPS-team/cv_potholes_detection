@@ -6,7 +6,9 @@ Build the docker container.
 Download and move `yolov4-spp-pothole-train_4000.weights` https://drive.google.com/open?id=1ozpPrFcjbn0uikeHQdXCowSXCAik4NHV into `models/` folder.
 
 ## Setting up env
-Change variables in `.env` with custom values.
+Copy `env` file and rename it in `.env`.
+Change variables in `.env` with your custom values.
+Ex.
 ```
 # Http port of micro-service
 HOST_PORT=5000
