@@ -2,7 +2,7 @@
     "old_config":"models/yolo-pothole-test.cfg", 
     "old_weight":"models/yolo-pothole-train_13000.weights", 
     "model_config":"models/yolov4-spp-pothole-test.cfg", 
-    "model_weight":"models/yolov4-spp-pothole-train_3000.weights", 
+    "model_weight":"models/yolov4-spp-pothole-train_4000.weights", 
     "meta":"models/obj.data",
     "out_dir":"frames_out/",
     "in_dir":"frames_in/",
