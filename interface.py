@@ -10,7 +10,7 @@ class PotholeEvent():
     attached_images = List[string] path or uid of images (to be defined) captured during PotholeEvent
     '''
 
-    def __init__(self, start_at: int=None, end_at: int=None):
+    def __init__(self, start_at: int = None, end_at: int = None):
         super().__init__()
         self.bumpID = None
         self.start_at = start_at
@@ -30,14 +30,14 @@ class PotholeEvent():
 
     def to_dict(self):
         d = {}
-        attrs = ["start_at", "end_at", "latitude", "longitude", "attached_sensors_data", "attached_images"]
+        attrs = ["bumpID", "start_at", "end_at", "latitude",
+                 "longitude", "attached_sensors_data", "attached_images"]
         for attr in attrs:
             if hasattr(self, attr):
                 d[attr] = getattr(self, attr)
             else:
                 d[attr] = None
         return d
-
 
     def contain_event(self, start_at: int, end_at: int) -> bool:
         ''' Contain timestamp defined by start_at, end_at (less or equal). '''

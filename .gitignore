@@ -6,6 +6,7 @@
 frames_in/*
 frames_out/*
 test
+*.so
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

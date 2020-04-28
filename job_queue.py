@@ -44,10 +44,12 @@ class JobQueue():
         self.worker = None
 
     def add(self, pothole_events):
-        self.pending_jobs.append(Job(pothole_events))
+        new_job = Job(pothole_events)
+        self.pending_jobs.append(new_job)
         if not self.worker:
             self.worker = Thread(target=self.run_next)
             self.worker.start()
+        return new_job
 
     def run_next(self, delay=0.5):
         if not self.running_job and len(self.pending_jobs) > 0:

@@ -31,7 +31,6 @@ def analyze(json_filename=None):
     if json_filename is not None:
         with open(json_filename, 'r') as f:
             content = f.read()
-            # print(content)
             parsed_json = json.loads(content)
     else:
         parsed_json = request.json
@@ -39,7 +38,8 @@ def analyze(json_filename=None):
     #     print("{}: {}".format(x, parsed_json[x]))
     pothole_events = [PotholeEvent().from_dict(x) for x in parsed_json]
     job_queue.add(pothole_events)
-    return jsonify(success=True)
+    job = job_queue.add(pothole_events)
+    return jsonify(success=True, job_id=str(job.uuid))
 
 @app.route('/analyze_folder/<path:path>', methods=['GET'])
 def analyze_folder(path):
@@ -48,8 +48,8 @@ def analyze_folder(path):
     # for x in parsed_json:
     #     print("{}: {}".format(x, parsed_json[x]))
     pothole_events = [PotholeEvent().from_dict(x) for x in parsed_json]
-    job_queue.add(pothole_events)
-    return jsonify(success=True)
+    job = job_queue.add(pothole_events)
+    return jsonify(success=True, job_id=str(job.uuid))
 
 
 @app.errorhandler(Exception)
@@ -74,4 +74,4 @@ def internal_error(e):
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', debug=True)
+    app.run(host='0.0.0.0', debug=False)

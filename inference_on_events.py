@@ -11,7 +11,7 @@ import pandas as pd
 
 model = PotholeDetection(configPath=config.model_config, weightPath=config.model_weight, metaPath=config.meta, saveDir=config.out_dir)
 
-def inference_on_events(pothole_events, clean=False, verbose=1):
+def inference_on_events(pothole_events, clean=False, remove_useless=True, verbose=1):
     # List of yet analyzed images
     analyzed_images = []
     # Frame that can be assigned to events
@@ -89,13 +89,14 @@ def inference_on_events(pothole_events, clean=False, verbose=1):
             print("|WARNING| Cannot assign frame to event")
 
     # Remove useless images from disk, that was not assigned to any events
-    new_events_images = list(np.array([[e['filename'] for e in event.attached_images] for event in taken_events]).flat)
-    for filename in saved_images:
-        file_path = os.path.join(config.out_dir, filename)
-        if filename not in new_events_images and os.path.isfile(file_path):
-            os.remove(file_path)  
-            if (verbose_time):
-                print("Useless image {} deleted.".format(file_path))
+    if remove_useless:
+        new_events_images = list(np.array([[e['filename'] for e in event.attached_images] for event in taken_events]).flat)
+        for filename in saved_images:
+            file_path = os.path.join(config.out_dir, filename)
+            if filename not in new_events_images and os.path.isfile(file_path):
+                os.remove(file_path)  
+                if (verbose_time):
+                    print("Useless image {} deleted.".format(file_path))
     # Remove all analyzed original images
     if clean:
         for image_path in analyzed_images:
