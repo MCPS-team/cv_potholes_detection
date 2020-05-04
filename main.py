@@ -37,7 +37,6 @@ def analyze(json_filename=None):
     # for x in parsed_json:
     #     print("{}: {}".format(x, parsed_json[x]))
     pothole_events = [PotholeEvent().from_dict(x) for x in parsed_json]
-    job_queue.add(pothole_events)
     job = job_queue.add(pothole_events)
     return jsonify(success=True, job_id=str(job.uuid))
 

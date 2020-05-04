@@ -5,7 +5,7 @@ import numpy as np
 from time import time
 
 orb = cv2.ORB_create()
-bf = cv2.BFMatcher()
+bf = cv2.BFMatcher(cv2.NORM_HAMMING)
 
 
 def sort_frame_names(filename):
@@ -14,14 +14,14 @@ def sort_frame_names(filename):
     return int(id)
 
 
-def extract_key_images(frames, lambda_match=300):
-    descriptors = []
+def extract_key_images(frames, lambda_match=0.9):
+    last_descriptor = None
     take_frames = []
 
     if len(frames) < 0:
         return []
 
-    if len(frames) < 5:
+    if len(frames) < 3:
         for frame in frames:
             take_frames.append(frame)
         return take_frames
@@ -31,21 +31,19 @@ def extract_key_images(frames, lambda_match=300):
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         kp, des = orb.detectAndCompute(gray, None)
 
-        if len(descriptors) > 0:
-            matches = bf.knnMatch(descriptors[-1], des, k=2)
-
+        if last_descriptor is None:
+            last_descriptor = des
+            take_frames.append(frame)
+        else:
+            matches = bf.knnMatch(last_descriptor, des, k=2)
             is_similar = 0
             for m, n in matches:
                 if m.distance < 0.75 * n.distance:
                     is_similar += 1
-                    if is_similar > lambda_match:
-                        break
-            if is_similar < lambda_match:
-                descriptors.append(des)
+            
+            if is_similar >= len(matches)*lambda_match:
+                last_descriptor = des
                 take_frames.append(frame)
-        else:
-            descriptors.append(des)
-            take_frames.append(frame)
 
     return take_frames
 

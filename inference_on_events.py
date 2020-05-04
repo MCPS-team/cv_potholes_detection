@@ -12,6 +12,11 @@ import pandas as pd
 model = PotholeDetection(configPath=config.model_config, weightPath=config.model_weight, metaPath=config.meta, saveDir=config.out_dir)
 
 def inference_on_events(pothole_events, clean=False, remove_useless=True, verbose=1):
+    ''' Filter out events in which aren't found potholes.
+    Each selected image is unique, 
+    if two events share the same images with potholes only the last event will be taken.
+    Analyze events in LIFO way.
+     '''
     # List of yet analyzed images
     analyzed_images = []
     # Frame that can be assigned to events
@@ -22,20 +27,22 @@ def inference_on_events(pothole_events, clean=False, remove_useless=True, verbos
     saved_images = []
     verbose_time = []
     stats = {"key_images":0, "lower_prob":0, "found_target":0, "not_found_target":0, "not_found_path":0, "found_path":0}
-    # Analize events in reversed order
-    for event in tqdm(reversed(pothole_events)):
+    # Analize events in reversed order (from last to first)
+    for event in tqdm(list(reversed(pothole_events))):
         # Join image name to path location
-        print("# EVENT", event)
-        print("-- Attached Images", event.attached_images)
+        if verbose:
+            print("# EVENT", event.bumpID)
         if len(event.attached_images)<0:
+            if verbose: print("No attached frames, skip to next event.")
             continue
-        image_paths = [os.path.join(config.in_dir, image['filename']) for image in list(reversed(event.attached_images))]
+        image_paths = [os.path.join(config.in_dir, image['filename']) for image in event.attached_images]
         # Filter out yet analyzed images
         not_analyzed = [x for x in image_paths if x not in analyzed_images]
         # Check integrity of images
         ok_images_path = check_frame_integrity(not_analyzed)
         # Remove similar-redoundant images
-        key_images_path = extract_key_images(ok_images_path, lambda_match=300)
+        # Reverse and then revereverse, so we can matain from the nearest image
+        key_images_path = list(reversed(extract_key_images(list(reversed(ok_images_path)), lambda_match=0.75)))
         stats['key_images'] += len(key_images_path)
         stats['not_found_path'] += len(not_analyzed)-len(ok_images_path)
         stats['found_path'] += len(ok_images_path)
@@ -44,6 +51,7 @@ def inference_on_events(pothole_events, clean=False, remove_useless=True, verbos
         # Detect pothole in key images
         for image_path in key_images_path:
             if verbose:
+                print("-> Image: {}".format(image_path))
                 start = time()
             out = model.detect(image_path, save=False)
             # out['detections'] is [(label, prob, (x,y, width, height)), (...), ...]
@@ -62,10 +70,10 @@ def inference_on_events(pothole_events, clean=False, remove_useless=True, verbos
                     stats['lower_prob'] += 1
             if verbose:
                 verbose_time.append(time()-start)
-                print("?-- Analyzed {} sec*image".format(np.mean(verbose_time)))
+        if verbose: print("|i| Analyzed {} sec/image".format(np.mean(verbose_time)))
 
         # Add to yet analyzed all images in event
-        analyzed_images += image_paths
+        analyzed_images += not_analyzed
         
         # Find the frame with higher probability in the list of event image
         find_best_frame = False
@@ -75,10 +83,7 @@ def inference_on_events(pothole_events, clean=False, remove_useless=True, verbos
             best_frame = useful_frames[best_frame_index]
             if any(best_frame['filename']==img['filename'] for img in event.attached_images):
                 find_best_frame = True
-                # Remove all previous frames
-                # del useful_frames[:best_frame_index+1]
-            else:
-                del useful_frames[best_frame_index]
+            del useful_frames[best_frame_index]
         
         # If find best frame override the others, 
         # else empty the list
@@ -86,7 +91,7 @@ def inference_on_events(pothole_events, clean=False, remove_useless=True, verbos
             event.attached_images = [best_frame]
             taken_events.append(event)
         else:
-            print("|WARNING| Cannot assign frame to event")
+            print("|WARNING| Pothole not detected for event")
 
     # Remove useless images from disk, that was not assigned to any events
     if remove_useless:
@@ -95,19 +100,20 @@ def inference_on_events(pothole_events, clean=False, remove_useless=True, verbos
             file_path = os.path.join(config.out_dir, filename)
             if filename not in new_events_images and os.path.isfile(file_path):
                 os.remove(file_path)  
-                if (verbose_time):
+                if (verbose):
                     print("Useless image {} deleted.".format(file_path))
+        
     # Remove all analyzed original images
     if clean:
         for image_path in analyzed_images:
             if os.path.isfile(image_path):
                 os.remove(image_path)
-                if (verbose_time):
+                if (verbose):
                     print("Image {} deleted.".format(image_path))
 
     print("|Stats|")
     print(stats)
-    print("All images analyzed {}".format(len(analyzed_images)))
+    print("Unique images in events {}".format(len(analyzed_images)))
     print("Taken events {}".format(len(taken_events)))
     # Restore list to original order
     return list(reversed(taken_events))
