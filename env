@@ -4,5 +4,5 @@ INPUT_IMGS_DIR=
 OUTPUT_IMGS_DIR=
 MODEL_DIR=
 MODEL_CONFIG=models/yolov4-spp-pothole-test.cfg
-MODEL_WEIGHT=models/yolov4-spp-pothole-train_4000.weights
+MODEL_WEIGHT=models/yolov4-spp-pothole-train_7000.weights
 THRESHOLD=0.55
