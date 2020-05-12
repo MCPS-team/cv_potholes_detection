@@ -3,6 +3,9 @@ Detect potholes in images using Deep Learning technique (YoloV4 [AlexeyAB/darkne
 
 # Getting started
 Build the docker container.
+```
+sudo docker build -f Dockerfile -t docker-cv-pothole-detect .
+```
 Download and move `yolov4-spp-pothole-train_7000.weights` https://drive.google.com/open?id=1-4BRAxU-ijkp6MlxQ2maetRrnpQ9DjTF into `models/` folder.
 
 ## Setting up env
