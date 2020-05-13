@@ -439,7 +439,7 @@ def performDetect(imagePath="data/dog.jpg", thresh= 0.25, configPath = "./cfg/yo
                 rr3, cc3 = draw.polygon_perimeter([x[1] - 1 for x in boundingBox], [x[0] for x in boundingBox], shape= shape)
                 rr4, cc4 = draw.polygon_perimeter([x[1] for x in boundingBox], [x[0] + 1 for x in boundingBox], shape= shape)
                 rr5, cc5 = draw.polygon_perimeter([x[1] for x in boundingBox], [x[0] - 1 for x in boundingBox], shape= shape)
-                boxColor = (max([255, int(255 * (1 - ((1.5*confidence) ** 2)))]), max([255, int(255 * ((1.5*confidence) ** 2))]), 0)
+                boxColor = cv2.cvtColor(np.float32([[[confidence*(360/3),1.0,255]]]), cv2.COLOR_HSV2RGB).squeeze().tolist()
                 draw.set_color(image, (rr, cc), boxColor, alpha= 0.6)
                 draw.set_color(image, (rr2, cc2), boxColor, alpha= 0.6)
                 draw.set_color(image, (rr3, cc3), boxColor, alpha= 0.6)
@@ -460,7 +460,12 @@ def performDetect(imagePath="data/dog.jpg", thresh= 0.25, configPath = "./cfg/yo
                 "caption": "\n<br/>".join(imcaption)
             }
         except Exception as e:
-            print("Unable to show image: "+str(e))
+            print("Unable to elaborate image: "+str(e)+" ["+imagePath+"]")
+            detections = {
+                "detections": [],
+                "image": [],
+                "caption": "None"
+            }
     return detections
 
 def performBatchDetect(thresh= 0.25, configPath = "./cfg/yolov3.cfg", weightPath = "yolov3.weights", metaPath= "./cfg/coco.data", hier_thresh=.5, nms=.45, batch_size=3):

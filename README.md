@@ -6,7 +6,11 @@ Build the docker container.
 ```
 sudo docker build -f Dockerfile -t docker-cv-pothole-detect .
 ```
-Download and move `yolov4-spp-pothole-train_7000.weights` https://drive.google.com/open?id=1-4BRAxU-ijkp6MlxQ2maetRrnpQ9DjTF into `models/` folder.
+Download the model weights and move it into `models/` folder.
+
+YoloV4 - https://drive.google.com/open?id=1-4BRAxU-ijkp6MlxQ2maetRrnpQ9DjTF<br/>
+YoloV3-tiny-prn - https://drive.google.com/open?id=10-mUlpiTl2T69LBI7vp-hXkO-Z5g-ZH1.
+
 
 ## Setting up env
 Copy `env` file and rename it in `.env`.
@@ -30,6 +34,7 @@ MODEL_DIR=/var/www/MCPS/cv_potholes_detection/models
 
 # Model's architecture configuration file
 MODEL_CONFIG=models/yolov4-spp-pothole-test.cfg
+# or models/yolov3-tiny-prn-pothole-test.cfg for tiny version
 
 # Model's pretained weights
 MODEL_WEIGHT=models/yolov4-spp-pothole-train_7000.weights
