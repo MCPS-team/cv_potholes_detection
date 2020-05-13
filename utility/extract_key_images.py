@@ -41,7 +41,7 @@ def extract_key_images(frames, lambda_match=0.9):
                 if m.distance < 0.75 * n.distance:
                     is_similar += 1
             
-            if is_similar >= len(matches)*lambda_match:
+            if is_similar <= len(matches)*lambda_match:
                 last_descriptor = des
                 take_frames.append(frame)
 

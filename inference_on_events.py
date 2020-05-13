@@ -42,7 +42,7 @@ def inference_on_events(pothole_events, clean=False, remove_useless=True, verbos
         ok_images_path = check_frame_integrity(not_analyzed)
         # Remove similar-redoundant images
         # Reverse and then revereverse, so we can matain from the nearest image
-        key_images_path = list(reversed(extract_key_images(list(reversed(ok_images_path)), lambda_match=0.7)))
+        key_images_path = list(reversed(extract_key_images(list(reversed(ok_images_path)), lambda_match=0.76)))
         stats['key_images'] += len(key_images_path)
         stats['not_found_path'] += len(not_analyzed)-len(ok_images_path)
         stats['found_path'] += len(ok_images_path)
